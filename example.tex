@@ -1,0 +1,87 @@
+% vim: set tw=80:
+\documentclass{uniarticle}
+
+\title{Example of a generic assignment}
+\date{\today}
+\author{Daniel Voogsgerd}
+
+% \affliation{Vrije Universiteit}
+
+\begin{document}
+
+\maketitle
+
+% \toc
+
+\begin{abstract}
+    \LaTeX class defines a class for \LaTeX which an optimal default of
+    included packages
+\end{abstract}
+
+\section{Elements}
+
+\subsection{Text}
+
+We can link to other sources \href{https://google.com}{Google}
+
+\subsubsection{Lists}
+
+\paragraph{Fonts}
+
+\subparagraph{Math mode}
+
+\subparagraph{Other languages}
+
+\foreignlanguage{dutch}{
+    We kunnen ook stukken in een andere taal schrijven. Hierbij gaat babel
+    wisselt babel naar de juiste taal.
+}
+
+We have equations
+
+\begin{equation}
+    E = mc^2
+\end{equation}
+
+\subparagraph{Monospace}
+
+\subparagraph{Default}
+
+\subparagraph{Quotes}
+
+We have several ways of quoting.
+
+The first would be the \verb|Verbatim|
+
+We can also insert blockquotes using the environment
+
+\subsection{Figures}
+
+\begin{figure}[h]
+    % \includegraphics[width=0.45\linewidth]{figures/}
+    \caption{}
+    \label{fig:}
+\end{figure}
+
+\subsection{}
+\subsubsection{Example}
+
+\paragraph{Test}
+
+We can have some code
+
+\begin{listing}
+    \begin{minted}{python}
+        print("Hello world")
+    \end{minted}
+    \caption{Hello world written in Python}
+    \label{listing:helloworld}
+\end{listing}
+
+\subparagraph{Testing}
+
+This should have all headings. We can cite stuff \cite{example-citekey}
+See code \cref{listing:helloworld}
+
+
+\end{document}
