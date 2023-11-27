@@ -78,6 +78,11 @@
 
 % Code
 \RequirePackage{minted}
+\usemintedstyle{colorful}
+\usepackage{xcolor}
+\definecolor{light-gray}{rgb}{0.9,0.9,0.9}
+\setminted{fontsize=\small, bgcolor=light-gray}
+
 
 % References
 \RequirePackage{cleveref}
