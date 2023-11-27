@@ -53,6 +53,8 @@
 
 % Text
 \RequirePackage[english]{babel}
+\setlength\parindent{0pt}
+\setlength\parskip{0.5em}
 
 % Math
 \RequirePackage{amsmath}
@@ -76,5 +78,3 @@
 
 % References
 \RequirePackage{cleveref}
-
-\setlength{\parskip}{0pt}
