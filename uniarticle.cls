@@ -69,6 +69,9 @@
 
 % Figures
 \RequirePackage{graphicx}
+\RequirePackage[justification=centering]{caption}
+\RequirePackage{subfigure}
+\RequirePackage{subcaption}
 
 % Column
 \RequirePackage{balance}
