@@ -6,3 +6,9 @@ _minted-*
 *.out
 
 *.pdf
+*.bbl
+*.bbg
+*.bcf
+*.blg
+*.toc
+*.run.xml
