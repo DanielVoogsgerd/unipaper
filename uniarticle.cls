@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{uniarticle}
 
-\LoadClass[10pt,a4paper]{article}
+\LoadClass[10pt,a4paper,twocolumn]{article}
 
 \RequirePackage{hyperref}
 \hypersetup{
@@ -46,7 +46,6 @@
 \RequirePackage{graphicx}
 
 % Column
-% TODO: Two column
 \RequirePackage{balance}
 
 % Code
