@@ -10,7 +10,30 @@
     filecolor=magenta,
     urlcolor=cyan,
     pdfpagemode=FullScreen,
-    }
+}
+
+\newcommand*{\subtitle}[1]{\gdef\thesubtitle{#1}}
+
+% \RequirePackage{strip}
+\renewcommand*{\maketitle}{%
+% \begin{titlepage}
+\twocolumn[
+\begin{@twocolumnfalse}
+    \begin{flushright}
+        {\includegraphics[width=6cm]{university-logos/vu.pdf}\par}
+    \end{flushright}
+    \begin{center}
+        {\huge\bfseries\@title} \\
+        \ifdef{\thesubtitle}{\LARGE\thesubtitle\\}{}
+        \vspace{0.5em}
+        {\large\@author} \\
+        {\large\@date}
+    \end{center}
+    \twocolumn
+\end{@twocolumnfalse}
+]
+% \end{titlepage}
+}
 
 \RequirePackage{verbatim}
 
