@@ -12,3 +12,4 @@ _minted-*
 *.blg
 *.toc
 *.run.xml
+*.xdv
