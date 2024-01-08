@@ -1,0 +1,286 @@
+% vim: set tw=80:
+\documentclass[nonacm,sigconf]{acmart}
+
+\usepackage{graphicx}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{listings}
+
+\geometry{margin=2cm,top=15mm,bottom=15mm,a4paper}
+
+\title{Dynamic Programming --- Assignment 1}
+\author{D.J.M. Voogsgerd}
+\date{November 2023}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\settopmatter{printacmref=false}
+\setcopyright{none}
+
+\setlength\parindent{0pt}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The stochastic knapsack problem describes a scenario where one is presented with
+a knapsack with a certain fixed capacity. One by one,
+you are presented a set of weights, each of which having its own reward (or
+score). At that moment you have to choose if you are going to accept that
+weight. Accepting will reduce the remaining knapsack capacity from that point
+onwards, but it will add a reward to the knapsack as well. At any point in time,
+you only know the weight of the current item, but not of any next items. All
+knowledge you have is their distribution (uniformly distributed over the
+integers $[1..10]$) and the number of remaining items you will be offered.
+
+This simplified problem deviates from reality, as we suppose you would be able
+to remove items from your knapsack if a better item comes along at a later time.
+
+This leads to the mathematical definition of our value function:
+
+\begin{equation}\label{eq:value_function}
+    V_t(x) = \sum_{s=1}^{10} P(s) \begin{cases}
+        V_{t+1}(x) &, \text{if } s > x \\
+        \text{max}\begin{cases}
+            v_{t+1}+V_{t+1}(x-s) \\
+            V_{t+1}(x)
+        \end{cases}
+        &, \text{otherwise}
+    \end{cases}
+\end{equation}
+
+where $x$ is the remaining capacity at time $t$, $T$ is the horizon, and $P(s)$
+is the probability of getting a weight of size $s$. Additionally, $v_t$ denotes
+the reward of the item at time $t$, and $V_t$ denotes the total value in the
+knapsack at time $t$.
+
+This value function calculates the expected reward at time $t$ given the
+probability for every possible item weight $s$. We split the function into two
+cases: If the item size is larger than the remaining capacity, $s > x$, we do
+not have a choice, because the knapsack cannot fit the weight. If the item size
+is smaller than or equal to the remaining capacity, we calculate whether we
+expect a higher total reward given the reward for accepting the item but with
+reduced future capacity, or without the item reward, but also without the
+corresponding loss in capacity.
+
+\section{Induction proof}
+
+We will start with an induction proof of an important property
+in the knapsack problem. We are going to prove that if at any
+point during the knapsack problem it is optimal to take a weight
+of size $s$, that it will also be optimal to take a weight of a
+size smaller than $s$.
+
+\subsection{Prerequisite proof}
+
+Before starting with the proof we are going to prove a property that will deem
+useful during the proof itself. We choose to start with this proof in order to
+be concise during the proof itself. \footnote{Note: this proof was covered during the
+tutorial and is identical to the answer of the tutorial. We make no claim that
+this proof is our own.}
+
+Hypothesis: $ V_{t}(x) \leq V_{t}(y) $ for $\forall t$, $ x \leq y $
+
+We can split this expression into the following cases:
+$ w_{t+1} > y $, $ x < w_{t+1} \leq y $, $ w_{t+1} \leq x $
+
+We start with the case where the weight is too big for both value functions: $ w_{t+1} > y $
+
+\begin{equation}
+    V_t(x) = V_{t+1}(x) \leq V_{t+1}(y) = V_{t+1}(y)
+\end{equation}
+
+Followed by the case: $ x < w_{t+1} \leq {y} $
+
+\begin{gather*}
+    V_t(x) = V_{t+1}(x) \leq V_{t+1}(y) \leq \\
+    \text{max} \{v_{t+1} + V_{t+1}(y -
+        w_{t+1}), V_{t+1}(y) \} = V_t(y)
+\end{gather*}
+
+And lastly the case where the weight could fit in either states: $ w_{t+1} \leq x $
+
+\begin{gather*}
+    V_t(x) = \text{max}\{v_{t+1} + V_{t+1}(x - w_{t+1}), V_{t+1}(x)\} \\
+    \le \\
+    \text{max}\{v_{t+1} + V_{t+1}(y - w_{t+1}), V_{t+1}(y)\} = V_t(y)
+\end{gather*}
+
+Using the property:
+
+\begin{equation}\label{eq:maxpansion}
+    \left(a \leq c\right) \wedge \left(b \leq d\right) \rightarrow (\text{max}\{a,
+    b\} \leq \text{max}\{c, d\})
+\end{equation}
+
+This proofs the induction part. Now we only need to prove the base case.
+
+At the horizon $t = T$ we are at the boundary, where we have a boundary condition.
+No weights can still be taken as there are none left, so the expected remaining
+reward is $0$.
+
+\begin{equation}
+    V_T = 0
+\end{equation}
+
+Using this as the base case we anchor the induction to prove it for all $t$ in
+the interval $[0..T]$.
+
+Q.E.D.
+
+\subsection{Main proof}
+
+Let us start with the hypothesis:
+
+\begin{equation}\label{eq:hypothesis}
+    V_t(x, s) \leq V_t(x, s-1)
+\end{equation}
+
+Because at this point in time our current weight is known, the value function in
+\cref{eq:value_function} for this iteration reduces to:
+
+\begin{equation}
+    V_t(x, S) = \begin{cases}
+        V_{t+1}(x) &, \text{if } x \le S \\
+        \text{max}\begin{cases}
+            v_{t+1}+V_{t+1}(x-S) \\
+            V_{t+1}(x)
+        \end{cases}
+        &, \text{otherwise}
+    \end{cases}
+\end{equation}
+
+In the problem we define that $s$ is a weight we can take. Therefore, it must be
+that $x > s$.
+
+This further reduces our value function to:
+
+\begin{equation}
+    V_t(x, S) = \text{max}\begin{cases}
+        v_{t+1} + V_{t+1}(x-S) \\
+        V_{t+1}(x)
+    \end{cases}
+\end{equation}
+
+We can substitute this value function in \cref{eq:hypothesis}, which yields:
+
+\begin{equation}
+    \text{max}\{1+V_{t+1}(x-s), V_{t+1}(x)\} \le
+    \text{max}\{1+V_{t+1}(x-(s-1)), V_{t+1}(x)\}
+\end{equation}
+
+Again using property \cref{eq:maxpansion} we find that if we can prove the
+following two statements, the above statement must be true.
+
+\begin{equation}
+    V_t(x, S) \leq V_t(x, S)
+\end{equation}
+
+\begin{equation}
+    v_{t+1} + V_{t+1}(x-s) \leq v_{t+1} + V_{t+1}(x-(s-1))
+\end{equation}
+
+Which can be written as:
+
+\begin{equation}\label{eq:x}
+    V_{t+1}(x-s) \leq V_{t+1}(x-s+1)
+\end{equation}
+
+Using the proof that $ V_{t}(x) \leq V_{t}(y) $ for $\forall t$, $ x \leq y $,
+we find that \cref{eq:x} must also be correct.
+
+Q.E.D.
+
+\section{Implementation}
+
+It follows from our proof that our action space can be the maximum weight we are
+willing to take. Because our value function is an induction in $t$, we only need
+the last iteration of our value function as the state. Thus:
+
+\begin{gather}
+    \mathcal{A}_{t,c} = [0..C] \nonumber \\
+    \mathcal{X} = [0..C] \nonumber
+\end{gather}
+
+Where $C$ is the remaining capacity, $c$ is the starting capacity, and $t$ is
+time. However, due to the stochastic nature we do
+not know beforehand what the remaining capacity is. Therefore, our
+data structures
+need to take $C$ as the starting capacity $c$.
+
+This results in a policy ($\alpha: \mathcal{T} \times \mathcal{X}$).
+
+\subsection{Our parameters}
+
+In this article we will set the parameters as follows:
+\begin{itemize}
+    \setlength\itemsep{0em}
+    \item The knapsack has a capacity of $10$ weight units.
+    \item A total of $10$ weights will be offered. So our horizon will be
+        $T=10$.
+    \item The weights are in the range $[1..10]$ and are uniformly distributed.
+    \item We will run $1000$ simulations.
+    \item Our rewards are $1$ for all weights, i.e. $ v_t = 1 \text{ for } \forall
+        t $.
+\end{itemize}
+
+\subsection{Building the optimal policy}
+
+$V_T$ is the boundary condition we defined to be $0$, and there is a data
+dependency from the computation of $\mathcal{X}_t$ on $\mathcal{X}_{t+1}$ as
+can be found in the definition \cref{eq:value_function}.
+
+We can therefore compute all the columns columns of the value function and the full action space using backward iteration in $t$.
+
+\begin{figure}[b]
+    \includegraphics[width=\linewidth]{action_space.pdf}
+    \caption{The optimal policy built by the model}
+    \label{fig:action_space}
+\end{figure}
+
+The resulting action space is illustrated in \cref{fig:action_space}. We see
+that we can never take a weight with zero capacity left. Additionally, we see
+that we should always take an item at $t=9$ if we can, which results in the last
+two columns being identical. If we can take an item at $t=9$, but do not
+actually take it, our maximum remaining reward is $1$. However, if we do take
+it, we are guaranteed a minimum reward of $1$. Thus, we should always take it if
+possible.
+
+An important fact following our value function is that $V_0(x=10) = 3.406$.
+Thus, we expect the average reward of this problem to converge to $3.406$.
+
+The model computes the action space in the order of hundreds of microseconds.
+
+\subsection{Simulation}
+Now that we have the right action space we can simulate the problem $1000$ times.
+We do this by creating random weights using pythons standard library function
+\lstinline{random.randint(1, 10)} at every step in time. We evaluate if the
+function is less than or equal to the maximum weight. If this is the case, we take the
+weight, otherwise, we skip it. We keep track of the total reward, and every
+time we take the weight we increment the reward with 1.
+
+\section{Results}
+
+ After running the problem $1000$ times, the average reward the model was able to achieve is
+$3.405$ which fairly close to our expected value. Running the model a couple of
+times shows that the reward indeed hovers around the expectation value.
+
+\begin{figure}[b]
+    \includegraphics[width=\linewidth]{histogram.pdf}
+    \caption{The score found per run}
+    \label{fig:histogram}
+\end{figure}
+
+A histogram of all our results can be found in \cref{fig:histogram}. We see that
+the mode is at a total reward of $3$, and all runs resulted in a reward between
+$2$ and $6$. Most of the values are either $3$ or $4$, which explains the mean
+value of the reward.
+
+% \clearpage
+% \appendix
+%
+% \section{Figures}
+%
+\end{document}

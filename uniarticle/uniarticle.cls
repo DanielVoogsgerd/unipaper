@@ -20,7 +20,7 @@
 \twocolumn[
 \begin{@twocolumnfalse}
     \begin{flushright}
-        {\includegraphics[width=6cm]{university-logos/vu.pdf}\par}
+        {\includegraphics[width=74mm]{university-logos/vu.pdf}\par}
     \end{flushright}
     \begin{center}
         {\huge\bfseries\@title} \\

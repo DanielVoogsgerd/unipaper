@@ -5,13 +5,15 @@
 \date{\today}
 \author{Daniel Voogsgerd}
 
-% \affliation{Vrije Universiteit}
+\bibliographystyle{IEEEtran}
+
+% \bibliography{references.bib}
 
 \begin{document}
 
 \maketitle
 
-% \toc
+\tableofcontents
 
 \begin{abstract}
     \LaTeX class defines a class for \LaTeX which an optimal default of
@@ -72,7 +74,7 @@ We can have some code
 
 \begin{listing}
     \begin{minted}{python}
-        print("Hello world")
+print("Hello world")
     \end{minted}
     \caption{Hello world written in Python}
     \label{listing:helloworld}
@@ -80,8 +82,9 @@ We can have some code
 
 \subparagraph{Testing}
 
-This should have all headings. We can cite stuff \cite{example-citekey}
+This should have all headings. We can cite stuff \cite{harris_array_2020}
 See code \cref{listing:helloworld}
 
+\bibliography{References}
 
 \end{document}

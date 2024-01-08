@@ -1,0 +1,297 @@
+% vim: set tw=80:
+\documentclass{uniarticle}
+
+\usepackage{tikz}
+\tikzstyle{node} = [circle, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\usetikzlibrary{shapes,arrows.meta,positioning,matrix}
+% \usepackage{standalone}
+
+
+\usepackage[section]{placeins}
+
+\title{Dynamic Programming}
+\subtitle{Assignment 2}
+
+\author{Thijs Dreef}
+\author{Dani\"el Voogsgerd}
+
+% \affiliation{%
+%     \institution{2764266 \\ Vrije Universiteit}
+%     % \city{Amsterdam}
+%     % \country{Netherlands}
+% }
+% %\email{t.dreef@student.vu.nl}
+%
+% \author{Dani\"el Voogsgerd}
+% \affiliation{%
+%     \institution{2829940 \\ Vrije Universiteit}
+%     % \city{Amsterdam}
+%     % \country{Netherlands}
+% }
+% %\email{d.j.m.voogsgerd@student.vu.nl}
+
+
+\date{November 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+We consider a system that models something that deteriorates over time. In real
+life, this might be your computer, your phone, or anything else that has a higher
+probability of failing the older it gets. Once it is broken we have to replace
+it for a constant cost.
+
+What is sometimes called the reward, will be called the cost in the following
+document, as we are trying to minimize this property. We define the replacement
+cost as:
+
+% Rewards
+\begin{equation}
+    c_f(t) = 1
+\end{equation}
+
+The failure chance is linear and increases every time unit with $0.01$ With a
+starting chance of $0.01$, we find:
+
+\begin{equation}
+    \mathbb{P}_f(t_a) = 0.1 + 0.01 t_a
+\end{equation}
+
+Or considering the state space:
+
+% Transition probabilities
+\begin{gather}
+    \mathbb{P}(0|t_a) = 0.1 + 0.01 t_a \\
+    \mathbb{P}(t_a + 1|t_a) = 1 - \mathbb{P}(0|t_a) = 0.9 - 0.01 t_a
+\end{gather}
+
+An important property that we have to deduce from these parameters is that after
+$N$ steps the probability of failure is $1$. So we are guaranteed that the part will
+never be older than $N$.
+
+\begin{equation}
+    1 = \mathbb{P}_f(N) = 0.1 + 0.01 N
+\end{equation}
+
+After solving the above, we find that $N = 90$, but because we include both ends
+of the range $[0..90]$ we end up with $91$ possible states. So our state spaces
+becomes: $\mathcal{X}_t = [0..N]$.
+This can be modelled using a Markov chain of length $N+1$.
+
+% Markov property
+An important property of the Markov chain is that it satisfies the Markov
+property, which states that adding more information to the state does not
+increase the reward. Differently stated, actions or transitions taken in
+the current state do not depend on the previous states, just on the current one.
+
+A visualisation of the Markov Chain can be found in \cref{fig:markov}
+In this article, we will start by showing the properties of this model.
+
+% \begin{figure}[h]
+%     \input{figures/markov.tex}
+%     \caption{Visualization of the Markov chain without multiple actions}
+%     \label{fig:markov}
+% \end{figure}
+
+\section{Long-run average cost}
+
+For the initial Markov chain, a natural question arises: what is the long-run
+average replacement cost? The long-run average replacement cost can be
+calculated from the long-run average distribution as follows:
+
+\begin{equation}\label{eq:stationary-cost}
+    \vec{c_f}^* = \vec{c_f} \cdot \vec{\pi^*} = \sum_i \pi^*_i c_{fi}
+\end{equation}
+
+\subsection{Stationary cost}
+
+Our first method for calculating the long-run average replacement cost is by
+finding the stationary distribution, as those should be identical for a
+communicating and acyclic Markov chain.
+
+For a stationary distribution, the following property has to hold:
+
+\begin{equation}
+    \vec{\pi}^T = \vec{\pi}^T \mathbf{P}
+\end{equation}
+
+This problem is a system of linear equations:
+
+\begin{equation}
+  \begin{gathered}
+    \pi_1 + \pi_2 + \pi_3 + \pi_{\text{...}} + \pi_{90} + \pi_{91} = 1 \\
+    \pi_2 - 0.9\pi_1 = 0 \\
+    \pi_3 - 0.89\pi_2 = 0 \\
+    \pi_4 - 0.88\pi_3 = 0 \\
+    \text{...} \\
+    \pi_{90} - 0.02\pi_{89} = 0 \\
+    \pi_{91} - 0.01\pi_{90} = 0
+  \end{gathered}
+\end{equation}
+
+We can solve this system of linear equations using a linear solver like the
+one found in \verb|numpy.linalg|.
+From that, we find a stationary distribution as found in
+\cref{fig:stationary-dist}.
+
+\begin{figure}[h]
+    \includegraphics[width=\linewidth]{figures/stationary-dist.pdf}
+    \caption{Stationary distribution of states for the Markov chain}
+    \label{fig:stationary-dist}
+\end{figure}
+
+From this stationary distribution, we can use \cref{eq:stationary-cost} to find
+a stationary cost of $0.1461$.
+
+\subsection{Simulating long-run average replacement costs}
+
+It is also possible to simulate the model for $n$ timesteps. We use
+\verb|random.uniform| for random numbers and we follow the transitions for
+$n$ time steps. To find the average, we keep track of the total cost during the
+run. At the end of the run, we divide by the number of timesteps to find the
+simulated long-run average replacement cost. If we do this for enough
+iterations, the value should converge to the expected value.
+In \cref{fig:simulation} we show the long-run average replacement costs as the
+amount of iterations increases, and as expected we see that the value converges
+to the expected value. At \\ $1$ $000$ $000$ iterations we find a replacement cost of $0.1463$.
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{figures/average_cost_plot.pdf}
+    \caption{The long-run average replacement cost}
+    \label{fig:simulation}
+\end{figure}
+
+\subsection{Poisson equation}
+
+Another way to find the long-run average cost is by solving the Poisson
+equation, which is defined as:
+
+\begin{equation}\label{eq:poisson-raw}
+    V^*(x) + \phi^* = \mathbb{E}\left[c_f(x)\right] + \sum_y \mathbb{P} \left(y | x \right) V^*(y)
+\end{equation}
+
+We can work out the expected cost to get:
+
+\begin{equation}\label{eq:poisson}
+    V^*(x) + \phi^* = \mathbb{P} \left(1 | x \right) \left(c_f(x) + V^*(1)
+        \right) + \sum_{y > 1} \mathbb{P} \left(y | x \right) V^*(y)
+\end{equation}
+
+Again, this yields a set of equations:
+
+\begin{equation}\label{eq:poisson-equations}
+  \begin{gathered}
+    V^*(1) + \phi^* = 0.1 \left(1 + V^*(1)\right) + 0.9 V^*(2) \\
+    V^*(2) + \phi^* = 0.11 \left(1 + V^*(1)\right) + 0.89 V^*(3) \\
+    \text{...} \\
+    V^*(90) + \phi^* = 0.99 \left(1 + V^*(1)\right) + 0.01 V^*(91) \\
+    V^*(91) + \phi^* = 1 + V^*(1)
+  \end{gathered}
+\end{equation}
+
+We can either solve the set of equations again using a solver, or we can use backwards
+recursion to find the long-term-average-cost.
+Using backwards recursion, we can rewrite the above as:
+
+\begin{equation}\label{eq:poisson-recursion}
+    V_{t+1}(x) = \mathbb{P} \left(1 | x \right) \left(c_f(x) + V_t^*(1)
+        \right) + \sum_{y > 1} \mathbb{P} \left(y | x \right) V_t^*(y)
+\end{equation}
+
+By running this until convergence we can iteratively find the long-run
+average cost. We define our solution as converged when our span becomes
+smaller than some
+chosen $\epsilon$.
+
+\begin{equation}\label{eq:convergence}
+    \text{span}\left\{\vec{V}_{t+1} - \vec{V}_t \right\} \le \epsilon
+\end{equation}
+
+We can choose an $\epsilon$ sufficiently small for our purposes. In our
+case, we chose $\epsilon = 10^{-10}$, and after running the corresponding code we found a
+long-run average replacement cost of $0.1461$.
+
+\section{Actions}
+
+We now include the option to preventively replace the part at a reduced cost of
+$c_r = 0.6$. Thus, at every node in the Markov chain, there is an alternative action
+with probability $1$ (as we deliberately choose this action). A visualisation of
+this can be found in \cref{fig:markov-actions}. The main question that arises
+is:
+what is the ideal policy for which the stationary (or long-run average cost) cost
+is the lowest? We call this the optimal policy.
+
+% \begin{figure}
+%     \input{figures/markov-action.tex}
+%     \caption{Visualization of the Markov chain with multiple actions}
+%     \label{fig:markov-actions}
+% \end{figure}
+
+\subsection{Policy iteration}
+
+One method to find the optimal policy is policy iteration. In policy
+iteration, we start by taking an arbitrary policy. We use the Poisson equation
+(again using backwards recursion) to arrive at the stationary cost for that
+policy and the corresponding $\vec{V}$. Our policy iteration stops once our
+convergence criterion as defined in \cref{eq:convergence} is fulfilled.
+
+From that point, we look at what policy would have the lowest cost in the next
+step. Then, we continue with that policy by solving the Poisson equation again.
+We can stop this procedure when we find that the ideal next policy is the same
+as the policy we just used for the Poisson equation.
+
+Or, in a more procedural manner:
+
+\begin{enumerate}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \item Chose an arbitrary policy
+    \item \label{en:poisson} Solve the Poisson equation
+    \item Find the policy with minimal cost
+    \item If the minimal policy is the same as the last policy
+        \begin{enumerate}
+            \item[true] $\rightarrow$ halt
+            \item[false] $\rightarrow$ go to step \ref{en:poisson} using the minimal policy
+        \end{enumerate}
+\end{enumerate}
+
+From policy iteration, we find that the optimal action is to replace when the
+part is $18$ timesteps old. Using this policy we arrive at a long term average cost of
+$0.14587$.
+
+\subsection{Value iteration}
+
+Another method is the so-called value iteration, which is very similar to the
+policy iteration, but instead of using the Poisson equation as an intermediate
+step, it uses iteration similar to the equation where we decide on the next
+action in policy iteration.
+
+More formally, in value iteration, we solve the Bellman equation
+(equation \ref{eq:bellman}) in an iterative
+manner.
+
+\begin{equation}\label{eq:bellman}
+    \vec{V} + \phi \vec{e} = \max_\alpha \left\{ \vec{r}_\alpha + \mathbf{P}_\alpha \vec{V} \right\}
+\end{equation}
+
+Unfortunately, this is a non-linear equation. However, we can easily solve it
+numerically using backwards iteration:
+
+\begin{equation}\label{eq:value}
+    \vec{V}_{t+1} = \max_\alpha \left\{ \vec{r}_\alpha + \mathbf{P}_\alpha \vec{V}_t \right\}
+\end{equation}
+
+We run this until it converges according to our convergence criterion as
+defined in \cref{eq:convergence}. At this point, we find that the optimal policy
+is again to replace at timestep $18$ and with a long-term average cost of: $0.14587$.
+
+\balance
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
