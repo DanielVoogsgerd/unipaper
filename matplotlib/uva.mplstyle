@@ -1,0 +1,31 @@
+# vim: set syntax=conf:
+# UvA Colorscheme
+# Source: https://www.uva.nl/over-de-uva/over-de-universiteit/huisstijl/huisstijlelementen/kleur/kleur.html#Donkergroen
+# Red (Main): #BC0031
+# Black     : #1F1F21
+# White:      #ffffff
+# Grey:       #808080
+
+# Support colors (110%)
+# Orange:       #a45c00
+# Green:        #857f0c
+# Dark green:   #1a5425
+# Blue:         #1d7492
+# Dark blue:    #003766
+# Purple:       #521349
+
+# Support colors (100%)
+# Orange:       #e98300
+# Green:        #beb511
+# Dark green:   #257835
+# Blue:         #2aa5d0
+# Dark blue:    #004e92
+# Purple:       #751b68
+
+font.family: Source Sans Pro
+font.serif: Utopia
+font.sans-serif: Source Sans Pro
+
+# Uses 100% right now
+axes.prop_cycle: cycler('color', ['bc0031', 'e98300' , 'beb511' , '257835' , '2aa5d0' , '004e92' , '751b68'])
+
