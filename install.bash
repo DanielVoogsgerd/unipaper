@@ -2,6 +2,12 @@
 
 # Attempt to locally install the package
 
+devmode=false
+if [ "$1" == "dev" ]; then
+    echo "DEV MODE: Symlinking instead of copying"
+    devmode=true
+fi
+
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
 
 matplotlib_dir="$(python -c "import matplotlib; print(matplotlib.get_configdir())" 2>/dev/null)"
@@ -18,10 +24,19 @@ source_dir="$(dirname "${BASH_SOURCE[0]}")"
 
 mkdir -p "${latex_dir}"
 
-cp ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
+if $devmode; then
+    ln -sf ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
+else
+    cp ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
+fi
 
 mkdir -p "${matplotlib_style_dir}"
 for file in "${source_dir}/matplotlib/"*".mplstyle"; do
-    cp "${file}" "${matplotlib_style_dir}/"
+    if $devmode; then
+        ln -sf "$(realpath "${file}")" "${matplotlib_style_dir}/"
+    else
+        cp "${file}" "${matplotlib_style_dir}/"
+    fi
+
 done
 
