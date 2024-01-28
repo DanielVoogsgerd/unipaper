@@ -55,6 +55,7 @@
 \RequirePackage[english]{babel}
 \setlength\parindent{0pt}
 \setlength\parskip{0.5em}
+\RequirePackage{acro}
 
 % Math
 \RequirePackage{amsmath}
