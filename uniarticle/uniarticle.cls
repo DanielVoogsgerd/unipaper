@@ -64,6 +64,7 @@
 % Physics
 \RequirePackage{physics}
 \RequirePackage{siunitx}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
 
 % Layout
 \RequirePackage[a4paper,margin=2cm]{geometry}
