@@ -1,0 +1,20 @@
+\usepackage{tikz}
+
+\newcommand \maketitlepage{
+    {
+    % \usebackgroundtemplate{
+    % \includegraphics[width=\paperwidth]{../university-logos/vu.pdf}
+    % }
+\begin{frame}[plain]
+    % Print the title page as the first slide
+    \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,yshift=-1.5pt,xshift=1pt]%
+        at (current page.north west)
+        {\includegraphics[width=0.25\paperwidth]{\thelogo}};
+    \end{tikzpicture}
+    \titlepage
+\end{frame}
+}
+}
+
+\logo{\includegraphics[width=0.25\paperwidth]{\thelogo}}
