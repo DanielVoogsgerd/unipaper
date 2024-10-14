@@ -50,3 +50,5 @@ if $devmode; then
 else
     cp ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
 fi
+
+
