@@ -25,7 +25,7 @@ source_dir="$(dirname "${BASH_SOURCE[0]}")"
 mkdir -p "${latex_dir}"
 
 if $devmode; then
-    ln -sf ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
+    ln -sf "$(realpath "${source_dir}/uniarticle/uniarticle.cls")" "${latex_dir}/"
 else
     cp ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
 fi
@@ -37,6 +37,16 @@ for file in "${source_dir}/matplotlib/"*".mplstyle"; do
     else
         cp "${file}" "${matplotlib_style_dir}/"
     fi
-
 done
 
+if $devmode; then
+    ln -sf "$(realpath "${source_dir}/university-logos")" "${latex_dir}/"
+else
+    cp "${source_dir}/university-logos" "${latex_dir}/"
+fi
+
+if $devmode; then
+    ln -sf "$(realpath "${source_dir}/uniarticle/uniarticle.cls")" "${latex_dir}/"
+else
+    cp ${source_dir}/uniarticle/uniarticle.cls "${latex_dir}/"
+fi

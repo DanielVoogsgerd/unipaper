@@ -14,26 +14,18 @@
 
 \newcommand*{\subtitle}[1]{\gdef\thesubtitle{#1}}
 
-% \RequirePackage{strip}
-\renewcommand*{\maketitle}{%
-% \begin{titlepage}
-\twocolumn[
-\begin{@twocolumnfalse}
-    \begin{flushright}
-        {\includegraphics[width=74mm]{university-logos/vu.pdf}\par}
-    \end{flushright}
-    \begin{center}
-        {\huge\bfseries\@title} \\
-        \ifdef{\thesubtitle}{\LARGE\thesubtitle\\}{}
-        \vspace{0.5em}
-        {\large\@author} \\
-        {\large\@date}
-    \end{center}
-    \twocolumn
-\end{@twocolumnfalse}
-]
-% \end{titlepage}
-}
+% Title
+\RequirePackage{titling}
+\renewcommand{\maketitlehooka}{\begin{flushright}{\includegraphics[width=74mm]{university-logos/vu.pdf}\par}\end{flushright}}
+
+\pretitle{\begin{center}\LARGE\bf}
+
+\if\@mycolnum2
+\let\@oldmaketitle\maketitle
+\renewcommand{\maketitle}[1]{\twocolumn[\begin{@twocolumnfalse}\@oldmaketitle{#1}\end{@twocolumnfalse}]}
+\fi
+\setlength{\droptitle}{-5em}
+
 
 \RequirePackage{verbatim}
 
@@ -75,11 +67,14 @@
 \RequirePackage{subfigure}
 \RequirePackage{subcaption}
 
+% Tables
+\RequirePackage{tabularx}
+
 % Column
 \RequirePackage{balance}
 
 % Code
-\RequirePackage{minted}
+\RequirePackage[outputdir=.aux]{minted}
 \usemintedstyle{colorful}
 \usepackage{xcolor}
 \definecolor{light-gray}{rgb}{0.9,0.9,0.9}
